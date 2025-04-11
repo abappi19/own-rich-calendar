@@ -14,27 +14,24 @@ type CalendarDaysContainerProps = {
     disabledDays?: Array<1 | 2 | 3 | 4 | 5 | 6 | 7>
 }
 
-const CalendarMonthViewComponent = React.memo(({ View, Text, date, startDayIndex, daysInMonth, endOffset, startOffset, disabledDays }: CalendarDaysContainerProps) => {
+const CalendarMonthViewComponent = React.memo(({ View, Text, date, daysInMonth, endOffset, startOffset, disabledDays }: CalendarDaysContainerProps) => {
 
-    return <>
-        <Text>days: {daysInMonth} weeks: {Math.ceil(daysInMonth / 7)} startDayIndex: {startDayIndex} startoffset: {startOffset} endOffset: {endOffset}</Text>
+    return <View style={styles.calendarContainer}>
+        {
+            Array.from({ length: daysInMonth + startOffset + endOffset }).map((_, index) => {
 
-        <View style={styles.calendarContainer}>
-            {
-                Array.from({ length: daysInMonth + startOffset + endOffset }).map((_, index) => {
+                const day = (index + 1) - startOffset;
+                const currentDate = new Date(date.getFullYear(), date.getMonth(), day);
 
-                    const day = (index + 1) - startOffset;
-                    const currentDate = new Date(date.getFullYear(), date.getMonth(), day);
+                const dimmed = day < 1 || day > daysInMonth || disabledDays?.includes(currentDate.getDay() as any);
+                const selected = date.getDate() === currentDate.getDate() && date.getMonth() === currentDate.getMonth();
 
-                    const dimmed = day < 1 || day > daysInMonth || disabledDays?.includes(currentDate.getDay() as any);
-
-                    return <View style={{ ...styles.item, ...(dimmed ? styles.itemDimmed : {}) }} key={index}>
-                        <Text style={{ fontWeight: 'normal' }}>{currentDate.getDate()}</Text>
-                    </View>
-                })
-            }
-        </View>
-    </>
+                return <View style={{ ...styles.item, ...(dimmed ? styles.itemDimmed : {}), ...(selected ? styles.itemSelected : {}) }} key={index}>
+                    <Text style={{ fontWeight: 'normal' }}>{currentDate.getDate()}</Text>
+                </View>
+            })
+        }
+    </View>
 });
 
 export const CalendarMonthView = React.memo(() => {
@@ -79,5 +76,8 @@ const styles = EfStyleSheet.create({
     itemDimmed: {
         opacity: 0.3,
         pointerEvents: 'none'
+    },
+    itemSelected: {
+        backgroundColor: 'green',
     }
 })

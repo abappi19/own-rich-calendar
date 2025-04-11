@@ -3,7 +3,7 @@ import React from "react";
 const StateContext = React.createContext<any>(null);
 
 
-export function useProvidedState<T>(){
+export function useProvidedState<T>() {
     const context = React.useContext<T>(StateContext);
     if (!context) {
         throw new Error('useProvidedState must be used within a StateProvider');
@@ -12,14 +12,9 @@ export function useProvidedState<T>(){
 }
 
 
-export function StateProvider<T extends any>({ children, ...rest }: { children: React.ReactNode } & T) {
-    const [state, setState] = React.useState<T>(rest as any);
+export function StateProvider<T extends object>({ children, ...rest }: { children: React.ReactNode } & T) {
 
-    React.useEffect(() => {
-        setState(rest as any);
-    }, [rest]);
-
-    return <StateContext.Provider value={state}>
+    return <StateContext.Provider value={rest}>
         {children}
     </StateContext.Provider>
 }

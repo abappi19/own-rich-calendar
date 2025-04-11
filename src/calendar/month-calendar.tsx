@@ -2,9 +2,8 @@ import * as React from 'react'
 import EfStyleSheet from '../utils/style-helper'
 import { CalendarWeeksTitleContainer } from '../library/component/calendar-weeks-title-component';
 import { CalendarMonthView } from '../library/component/calendar-month-view-component';
-import { format, getDaysInMonth } from 'date-fns';
 import { MonthCalendarStateProvider } from '../library/providers/state/month-calendar-state-provider';
-
+import { getDaysInMonth, getMonthName } from '../utils/date-helper';
 interface Props {
     renderView: React.FC<{ style?: React.CSSProperties, children: React.ReactNode, handleClick?: () => void }>,
     renderText: React.FC<{ style?: React.CSSProperties, children: React.ReactNode }>,
@@ -13,7 +12,9 @@ interface Props {
 }
 
 export const MonthCalendar = React.memo(({ renderView, startDay = 1, renderText }: Props) => {
-    const [date, setDate] = React.useState(new Date(2025, 4, 11));
+    const [date, setDate] = React.useState(new Date());
+
+    console.log(new Date().getDate() , " date")
 
     const startDayIndex = React.useMemo(() => startDay % 7, [startDay]);
 
@@ -45,10 +46,10 @@ export const MonthCalendar = React.memo(({ renderView, startDay = 1, renderText 
 
         <View style={styles.container}>
             <View>
-                <View>{format(date, 'MMMM yyyy')}</View>
+                <View>{getMonthName(date).label}, {date.getFullYear()}</View>
             </View>
             <CalendarWeeksTitleContainer View={View} Text={Text} startDayIndex={startDayIndex} date={date} />
-            <CalendarMonthView />
+            <CalendarMonthView  />
         </View >
     </MonthCalendarStateProvider >
     )
