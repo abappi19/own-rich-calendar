@@ -7,6 +7,7 @@ type CalendarDaysContainerProps = {
     View: React.FC<{ style?: React.CSSProperties, children: React.ReactNode, handleClick?: () => void }>,
     Text: React.FC<{ style?: React.CSSProperties, children: React.ReactNode }>,
     date: Date,
+    setDate: (date: Date) => void,
     startDayIndex: number;
     daysInMonth: number,
     startOffset: number,
@@ -14,7 +15,8 @@ type CalendarDaysContainerProps = {
     disabledDays?: Array<1 | 2 | 3 | 4 | 5 | 6 | 7>
 }
 
-const CalendarMonthViewComponent = React.memo(({ View, Text, date, daysInMonth, endOffset, startOffset, disabledDays }: CalendarDaysContainerProps) => {
+const CalendarMonthViewComponent = React.memo(({ View, Text, date, daysInMonth, endOffset, startOffset, disabledDays, setDate }: CalendarDaysContainerProps) => {
+
 
     return <View style={styles.calendarContainer}>
         {
@@ -26,7 +28,21 @@ const CalendarMonthViewComponent = React.memo(({ View, Text, date, daysInMonth, 
                 const dimmed = day < 1 || day > daysInMonth || disabledDays?.includes(currentDate.getDay() as any);
                 const selected = date.getDate() === currentDate.getDate() && date.getMonth() === currentDate.getMonth();
 
-                return <View style={{ ...styles.item, ...(dimmed ? styles.itemDimmed : {}), ...(selected ? styles.itemSelected : {}) }} key={index}>
+
+                const onDayClick = () => {
+                    setDate(currentDate);
+                }
+
+                return <View
+                    style={{
+                        ...styles.item,
+                        ...(dimmed ? styles.itemDimmed : {}),
+                        ...(selected ? styles.itemSelected : {}),
+                        cursor: 'pointer'
+                    }}
+                    key={currentDate.toDateString()}
+                    handleClick={onDayClick}
+                >
                     <Text style={{ fontWeight: 'normal' }}>{currentDate.getDate()}</Text>
                 </View>
             })
@@ -36,7 +52,7 @@ const CalendarMonthViewComponent = React.memo(({ View, Text, date, daysInMonth, 
 
 export const CalendarMonthView = React.memo(() => {
 
-    const { Text, View, date, daysInMonth, endOffset, startDayIndex, startOffset, disabledDays } = useMonthCalendarState();
+    const { Text, View, date, daysInMonth, endOffset, startDayIndex, startOffset, disabledDays, setDate } = useMonthCalendarState();
 
     return <CalendarMonthViewComponent
         View={View}
@@ -47,6 +63,7 @@ export const CalendarMonthView = React.memo(() => {
         startDayIndex={startDayIndex}
         startOffset={startOffset}
         disabledDays={disabledDays}
+        setDate={setDate}
     />
 });
 
@@ -75,7 +92,6 @@ const styles = EfStyleSheet.create({
     },
     itemDimmed: {
         opacity: 0.3,
-        pointerEvents: 'none'
     },
     itemSelected: {
         backgroundColor: 'green',

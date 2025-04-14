@@ -1,22 +1,39 @@
 import React from "react";
 import EfStyleSheet from "../../utils/style-helper";
 import { Days } from "../enum-lists/calendar.enum-list";
+import { Day } from "../enums/calendar.enum";
 
 export type CalendarWeeksTitleContainerProps = {
     View: React.FC<{ style?: React.CSSProperties, children: React.ReactNode, handleClick?: () => void }>,
     Text: React.FC<{ style?: React.CSSProperties, children: React.ReactNode }>,
     startDayIndex: number,
-    date:Date
+    date: Date,
+    renderWeekDayTitle?: React.FC<{
+        style: React.CSSProperties, day: {
+            label: string;
+            sortLabel: string;
+            tinyLabel: string;
+            index: Day;
+        };
+        isDisabled: boolean;
+    }>
 }
 
-export const CalendarWeeksTitleContainer = React.memo(({ View, Text, startDayIndex }: CalendarWeeksTitleContainerProps) => {
+export const CalendarWeeksTitleContainer = React.memo(({ View, Text, startDayIndex, renderWeekDayTitle }: CalendarWeeksTitleContainerProps) => {
+    const WeekDayComponent = React.useMemo(() => renderWeekDayTitle, [renderWeekDayTitle]);
     return <View style={styles.calendarContainer}>
         {
             Array.from({ length: 7 }).map((_, index) => {
                 const dayIndex = (startDayIndex + index) % 7;
-                return <View style={styles.item} key={index + 'day'}>
-                    <Text style={{ fontWeight: 'bold' }}>{Days[dayIndex].sortLabel}</Text>
-                </View>
+                return !!WeekDayComponent
+                    ? <WeekDayComponent
+                        style={styles.item}
+                        day={Days[dayIndex]}
+                        isDisabled={false}
+                    />
+                    : <View style={styles.item} key={index + 'day'}>
+                        <Text style={{ fontWeight: 'bold' }}>{Days[dayIndex].sortLabel}</Text>
+                    </View>
             })
         }
     </View>

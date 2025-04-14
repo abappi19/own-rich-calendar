@@ -12,7 +12,8 @@ export type MonthCalendarStateContextType = {
     startDayIndex: number,
     daysInMonth: number,
     startOffset: number,
-    endOffset: number
+    endOffset: number,
+    alwaysRenderSixthWeek: boolean,
 }
 
 export const useMonthCalendarState = () => useProvidedState<MonthCalendarStateContextType>();
